@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@contact.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 14:38:31 by madamou           #+#    #+#             */
-/*   Updated: 2024/05/19 18:25:47 by madamou          ###   ########.fr       */
+/*   Updated: 2024/05/23 20:59:26 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,7 @@ int	ft_check_if_newline(char *all)
 	int	i;
 
 	i = 0;
-	if (!all)
-		return (0);
-	while (all[i])
+	while (all && all[i])
 	{
 		if (all[i] == '\n')
 			return (1);
@@ -28,44 +26,19 @@ int	ft_check_if_newline(char *all)
 	return (0);
 }
 
-char	*ft_clear_all(char *all)
-{
-	int		i;
-	int		j;
-	int		len_all;
-	char	*tmp;
-
-	i = 0;
-	len_all = ft_strlen1(all, 1);
-	while (all[i] != '\n')
-		i++;
-	i++;
-	tmp = malloc(sizeof(char) * (len_all - i + 1));
-	if (!tmp)
-		return (free(all), NULL);
-	j = 0;
-	while (all[i])
-		tmp[j++] = all[i++];
-	tmp[j] = '\0';
-	all = ft_strcpy1(all, tmp);
-	free(tmp);
-	if (!all)
-		return (NULL);
-	return (all);
-}
-
 char	*ft_norminette(int fd, char *all)
 {
 	char	*buff;
 
-	buff = "";
-	return (all = ft_moulinette(all, buff, fd, BUFFER_SIZE));
+	buff = NULL;
+	return (ft_moulinette(all, buff, fd, BUFFER_SIZE));
 }
 
 char	*ft_moulinette(char *all, char *buff, int fd, int byte_read)
 {
-	while (ft_check_if_newline(all) == 0)
+	while (ft_check_if_newline(buff) == 0)
 	{
+		free(buff);
 		buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (!buff)
 			return (free(all), NULL);
@@ -75,17 +48,17 @@ char	*ft_moulinette(char *all, char *buff, int fd, int byte_read)
 		buff[byte_read] = '\0';
 		if (byte_read < BUFFER_SIZE)
 			break ;
-		all = ft_buff_to_all(all, buff);
+		all = ft_buff_to_all(all, buff, byte_read);
 		if (!all)
 			return (NULL);
 	}
 	if (byte_read < BUFFER_SIZE)
 	{
-		all = ft_buff_to_all(all, buff);
+		all = ft_buff_to_all(all, buff, byte_read);
 		if (!all)
 			return (NULL);
 	}
-	return (all);
+	return (free(buff), all);
 }
 
 char	*get_next_line(int fd)
@@ -97,7 +70,7 @@ char	*get_next_line(int fd)
 		return (NULL);
 	all[fd] = ft_norminette(fd, all[fd]);
 	if (!all[fd])
-		return (free(all[fd]), NULL);
+		return (NULL);
 	if (ft_check_if_newline(all[fd]) == 1)
 	{
 		sortie = ft_strdup1(all[fd], 2);
@@ -112,8 +85,6 @@ char	*get_next_line(int fd)
 		sortie = ft_strdup1(all[fd], 1);
 		all[fd] = NULL;
 	}
-	if (!sortie)
-		return (free(all[fd]), NULL);
 	return (sortie);
 }
 

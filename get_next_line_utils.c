@@ -57,9 +57,7 @@ char	*ft_strcpy(char *dest, char *src)
 
 	i = -1;
 	if (!src)
-	{
 		return (dest);
-	}
 	while (src[++i])
 		dest[i] = src[i];
 	return (dest[i] = '\0', dest);
@@ -69,9 +67,11 @@ char	*ft_strdup(char *src, int cas)
 {
 	char				*dest;
 	long unsigned int	i;
+	int					len_str;
 
+	len_str = ft_strlen(src, cas);
 	i = -1;
-	dest = malloc(sizeof(char) * (ft_strlen(src, cas) + 1));
+	dest = malloc(sizeof(char) * (len_str + 1));
 	if (dest == NULL)
 		return (free(src), NULL);
 	if (cas == 1)
@@ -86,9 +86,7 @@ char	*ft_strdup(char *src, int cas)
 			dest[i] = src[i];
 		dest[i] = src[i];
 		i++;
-		src = ft_clear_all(src);
-		if (!src)
-			return (free(dest), NULL);
+		src = ft_strcpy(src, &src[len_str]);
 	}
 	return (dest[i] = '\0', dest);
 }

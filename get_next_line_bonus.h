@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@contact.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 14:38:37 by madamou           #+#    #+#             */
-/*   Updated: 2024/05/08 23:11:00 by madamou          ###   ########.fr       */
+/*   Updated: 2024/05/23 20:59:22 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-//# define BUFFER_SIZE 5
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 5
+# endif
 
 int		ft_check_if_newline(char *all);
 int		ft_strlen1(char *str, int cas);
@@ -25,7 +27,7 @@ int		ft_strlen1(char *str, int cas);
 char	*ft_clear_all(char *all);
 char	*ft_norminette(int fd, char *all);
 char	*ft_strdup1(char *src, int cas);
-char	*ft_buff_to_all(char *all, char *buff);
+char	*ft_buff_to_all(char *all, char *buff, int len_buff);
 char	*get_next_line(int fd);
 char	*ft_strcpy1(char *dest, char *src);
 char	*ft_moulinette(char *all, char *buff, int fd, int byte_read);

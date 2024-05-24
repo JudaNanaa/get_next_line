@@ -6,7 +6,7 @@
 /*   By: madamou <madamou@contact.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 14:38:34 by madamou           #+#    #+#             */
-/*   Updated: 2024/05/19 18:38:25 by madamou          ###   ########.fr       */
+/*   Updated: 2024/05/23 20:59:30 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,24 +31,30 @@ int	ft_strlen1(char *str, int cas)
 	return (i);
 }
 
-char	*ft_buff_to_all(char *all, char *buff)
+char	*ft_buff_to_all(char *all, char *buff, int len_buff)
 {
 	char	*str;
 	int		i;
 	int		j;
 
 	i = ft_strlen1(all, 1);
-	str = malloc(sizeof(char) * (i + ft_strlen1(buff, 1) + 1));
+	str = malloc(sizeof(char) * (i + len_buff + 1));
 	if (!str)
-		return (free(all), free(buff), NULL);
+		return (free(all), NULL);
 	str[0] = '\0';
-	str = ft_strcpy1(str, all);
+	j = 0;
+	while (all && all[j])
+	{
+		str[j] = all[j];
+		j++;
+	}
+	str[j] = '\0';
 	free(all);
 	j = -1;
 	while (buff[++j])
 		str[i + j] = buff[j];
 	str[i + j] = '\0';
-	return (free(buff), str);
+	return (str);
 }
 
 char	*ft_strcpy1(char *dest, char *src)
@@ -67,11 +73,13 @@ char	*ft_strdup1(char *src, int cas)
 {
 	char				*dest;
 	long unsigned int	i;
+	int					len_str;
 
+	len_str = ft_strlen1(src, cas);
 	i = -1;
-	dest = malloc(sizeof(char) * (ft_strlen1(src, cas) + 1));
-	if (dest == NULL)
-		return (free(src), NULL);
+	dest = malloc(sizeof(char) * (len_str + 1));
+	if (!dest)
+		return (NULL);
 	if (cas == 1)
 	{
 		while (src[++i])
@@ -84,9 +92,7 @@ char	*ft_strdup1(char *src, int cas)
 			dest[i] = src[i];
 		dest[i] = src[i];
 		i++;
-		src = ft_clear_all(src);
-		if (!src)
-			return (free(dest), NULL);
+		src = ft_strcpy1(src, &src[len_str]);
 	}
 	return (dest[i] = '\0', dest);
 }

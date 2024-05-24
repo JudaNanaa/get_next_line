@@ -17,9 +17,7 @@ int	ft_check_if_newline(char *all)
 	int	i;
 
 	i = 0;
-	if (!all)
-		return (0);
-	while (all[i])
+	while (all && all[i])
 	{
 		if (all[i] == '\n')
 			return (1);
@@ -28,38 +26,12 @@ int	ft_check_if_newline(char *all)
 	return (0);
 }
 
-char	*ft_clear_all(char *all)
-{
-	int		i;
-	int		j;
-	int		len_all;
-	char	*tmp;
-
-	i = 0;
-	len_all = ft_strlen(all, 1);
-	while (all[i] != '\n')
-		i++;
-	i++;
-	tmp = malloc(sizeof(char) * (len_all - i + 1));
-	if (!tmp)
-		return (free(all), NULL);
-	j = 0;
-	while (all[i])
-		tmp[j++] = all[i++];
-	tmp[j] = '\0';
-	all = ft_strcpy(all, tmp);
-	free(tmp);
-	if (!all)
-		return (NULL);
-	return (all);
-}
-
 char	*ft_norminette(int fd, char *all)
 {
 	char	*buff;
 
 	buff = "";
-	return (all = ft_moulinette(all, buff, fd, BUFFER_SIZE));
+	return (ft_moulinette(all, buff, fd, BUFFER_SIZE));
 }
 
 char	*ft_moulinette(char *all, char *buff, int fd, int byte_read)
@@ -71,7 +43,7 @@ char	*ft_moulinette(char *all, char *buff, int fd, int byte_read)
 			return (free(all), NULL);
 		byte_read = read(fd, buff, BUFFER_SIZE);
 		if ((byte_read == 0 && !all) || byte_read == -1)
-			return (free(buff), free(all), NULL);
+			return (free(buff), NULL);
 		buff[byte_read] = '\0';
 		if (byte_read < BUFFER_SIZE)
 			break ;
@@ -97,7 +69,7 @@ char	*get_next_line(int fd)
 		return (NULL);
 	all = ft_norminette(fd, all);
 	if (!all)
-		return (free(all), NULL);
+		return (NULL);
 	if (ft_check_if_newline(all) == 1)
 	{
 		sortie = ft_strdup(all, 2);
@@ -113,7 +85,7 @@ char	*get_next_line(int fd)
 		all = NULL;
 	}
 	if (!sortie)
-		return (free(all), NULL);
+		return (NULL);
 	return (sortie);
 }
 
