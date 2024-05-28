@@ -43,7 +43,7 @@ char	*ft_moulinette(char *all, char *buff, int fd, int byte_read)
 			return (free(all), NULL);
 		byte_read = read(fd, buff, BUFFER_SIZE);
 		if ((byte_read == 0 && !all) || byte_read == -1)
-			return (free(buff), NULL);
+			return (free(buff), free(all), all = NULL, NULL);
 		buff[byte_read] = '\0';
 		if (byte_read < BUFFER_SIZE)
 			break ;
