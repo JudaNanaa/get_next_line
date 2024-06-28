@@ -5,14 +5,15 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: madamou <madamou@contact.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/26 14:38:34 by madamou           #+#    #+#             */
-/*   Updated: 2024/05/23 20:59:30 by itahri           ###   ########.fr       */
+/*   Created: 2024/05/26 16:39:33 by itahri            #+#    #+#             */
+/*   Updated: 2024/06/28 20:39:15 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
+#include <string.h>
 
-int	ft_strlen1(char *str, int cas)
+int	ft_strlen_gnl(char *str, int cas)
 {
 	int	i;
 
@@ -31,68 +32,64 @@ int	ft_strlen1(char *str, int cas)
 	return (i);
 }
 
-char	*ft_buff_to_all(char *all, char *buff, int len_buff)
+char	*ft_strcpy(char *dest, char *src)
 {
-	char	*str;
-	int		i;
-	int		j;
+	size_t	*intdest;
+	size_t	*intsrc;
+	size_t	len_int;
+	size_t	i;
 
-	i = ft_strlen1(all, 1);
-	str = malloc(sizeof(char) * (i + len_buff + 1));
-	if (!str)
-		return (free(all), NULL);
-	str[0] = '\0';
-	j = 0;
-	while (all && all[j])
+	intdest = (size_t *)dest;
+	intsrc = (size_t *)src;
+	len_int = ft_strlen_gnl(src, 1) / sizeof(size_t);
+	i = 0;
+	while (i < len_int)
 	{
-		str[j] = all[j];
-		j++;
+		intdest[i] = intsrc[i];
+		i++;
 	}
-	str[j] = '\0';
-	free(all);
-	j = -1;
-	while (buff[++j])
-		str[i + j] = buff[j];
-	str[i + j] = '\0';
-	return (str);
+	i *= sizeof(size_t);
+	while (src[i])
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	return (dest[i] = '\0', dest);
 }
 
-char	*ft_strcpy1(char *dest, char *src)
+int	ft_check_if_newline(char *sortie)
 {
 	int	i;
 
-	i = -1;
-	if (!src)
-		return (dest);
-	while (src[++i])
-		dest[i] = src[i];
-	return (dest[i] = '\0', dest);
+	i = 0;
+	if (!sortie)
+		return (0);
+	while (sortie[i])
+	{
+		if (sortie[i] == '\n')
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
-char	*ft_strdup1(char *src, int cas)
+char	*ft_format_sortie(char *sortie)
 {
-	char				*dest;
-	long unsigned int	i;
-	int					len_str;
+	int		i;
+	char	*str;
+	int		j;
 
-	len_str = ft_strlen1(src, cas);
-	i = -1;
-	dest = malloc(sizeof(char) * (len_str + 1));
-	if (!dest)
-		return (NULL);
-	if (cas == 1)
+	j = 0;
+	i = ft_strlen_gnl(sortie, 2);
+	str = malloc(sizeof(char) * (i + 1));
+	if (!str)
+		return (free(sortie), NULL);
+	while (j < i)
 	{
-		while (src[++i])
-			dest[i] = src[i];
-		free(src);
+		str[j] = sortie[j];
+		++j;
 	}
-	if (cas == 2)
-	{
-		while (src[++i] != '\n')
-			dest[i] = src[i];
-		dest[i] = src[i];
-		i++;
-		src = ft_strcpy1(src, &src[len_str]);
-	}
-	return (dest[i] = '\0', dest);
+	str[j] = '\0';
+	free(sortie);
+	return (str);
 }

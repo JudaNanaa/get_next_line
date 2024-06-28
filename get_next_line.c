@@ -5,121 +5,122 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: madamou <madamou@contact.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/26 14:38:31 by madamou           #+#    #+#             */
-/*   Updated: 2024/05/19 18:23:56 by madamou          ###   ########.fr       */
+/*   Created: 2024/05/21 18:32:05 by itahri            #+#    #+#             */
+/*   Updated: 2024/06/28 20:34:42 by madamou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	ft_check_if_newline(char *all)
+char	*ft_buff_to_all(char *all, char *buff)
 {
-	int	i;
+	char	*str;
+	int		i;
 
-	i = 0;
-	while (all && all[i])
-	{
-		if (all[i] == '\n')
-			return (1);
-		i++;
-	}
-	return (0);
+	i = ft_strlen(all, 1);
+	str = malloc(sizeof(char) * (i + ft_strlen(buff, 1) + 1));
+	if (!str)
+		return (free(all), NULL);
+	str[0] = '\0';
+	ft_strcpy(str, all);
+	free(all);
+	ft_strcpy(&str[i], buff);
+	return (str);
 }
 
-char	*ft_norminette(int fd, char *all)
+char	*ft_read_file(int fd, char *sortie, char *buff)
 {
-	char	*buff;
+	int	nb_read;
 
-	buff = "";
-	return (ft_moulinette(all, buff, fd, BUFFER_SIZE));
-}
-
-char	*ft_moulinette(char *all, char *buff, int fd, int byte_read)
-{
-	while (ft_check_if_newline(all) == 0)
+	buff[0] = '\0';
+	nb_read = BUFFER_SIZE;
+	while (ft_check_if_newline(sortie) == 0)
 	{
-		buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-		if (!buff)
-			return (free(all), NULL);
-		byte_read = read(fd, buff, BUFFER_SIZE);
-		if ((byte_read == 0 && !all) || byte_read == -1)
-			return (free(buff), free(all), all = NULL, NULL);
-		buff[byte_read] = '\0';
-		if (byte_read < BUFFER_SIZE)
+		nb_read = read(fd, buff, BUFFER_SIZE);
+		if (nb_read == -1)
+			return (free(sortie), NULL);
+		buff[nb_read] = '\0';
+		if (nb_read < BUFFER_SIZE)
 			break ;
-		all = ft_buff_to_all(all, buff);
-		if (!all)
+		sortie = ft_buff_to_all(sortie, buff);
+		if (!sortie)
 			return (NULL);
 	}
-	if (byte_read < BUFFER_SIZE)
+	if (nb_read < BUFFER_SIZE)
 	{
-		all = ft_buff_to_all(all, buff);
-		if (!all)
+		sortie = ft_buff_to_all(sortie, buff);
+		if (!sortie)
 			return (NULL);
 	}
-	return (all);
+	return (sortie);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*all;
+	static char	stach[BUFFER_SIZE + 1];
 	char		*sortie;
 
 	if (fd < 0)
 		return (NULL);
-	all = ft_norminette(fd, all);
-	if (!all)
-		return (NULL);
-	if (ft_check_if_newline(all) == 1)
+	sortie = malloc(sizeof(char) * (ft_strlen(stach, 1) + 1));
+	if (!sortie)
+		return (stach[0] = '\0', NULL);
+	sortie[0] = '\0';
+	sortie = ft_strcpy(sortie, stach);
+	sortie = ft_read_file(fd, sortie, stach);
+	if (!sortie)
+		return (stach[0] = '\0', NULL);
+	if (ft_check_if_newline(sortie) == 1)
 	{
-		sortie = ft_strdup(all, 2);
-		if (all[0] == '\0')
-		{
-			free(all);
-			all = NULL;
-		}
+		ft_strcpy(stach, &sortie[ft_strlen(sortie, 2)]);
+		sortie = ft_format_sortie(sortie);
 	}
 	else
 	{
-		sortie = ft_strdup(all, 1);
-		all = NULL;
+		stach[0] = '\0';
+		if (sortie[0] == '\0')
+			return (free(sortie), NULL);
 	}
-	if (!sortie)
-		return (NULL);
 	return (sortie);
 }
 
-/*#include<fcntl.h>
-int	main(void)
-{
-        int fd;
-        char *line;
+// #include <fcntl.h>
 
-        // Ouvrir le fichier en lecture
-        fd = open("oui", O_RDONLY);
-        if (fd == -1)
-        {
-                perror("Error opening file");
-                return (1);
-        }
+// int	main(void)
+// {
+// 	int		fd;
+// 	char	*line;
 
-        // Lire et afficher chaque ligne du fichier
-        line = get_next_line(fd);
-        printf("[%s]", line);
-        free(line); // Libérer la mémoire allouée par get_next_line
-        line = get_next_line(fd);
-        printf("[%s]", line);
-        free(line); // Libérer la mémoire allouée par get_next_line
-        line = get_next_line(fd);
-        printf("[%s]", line);
-        free(line); // Libérer la mémoire allouée par get_next_line
-        line = get_next_line(fd);
-        printf("[%s]", line);
-        free(line); // Libérer la mémoire allouée par get_next_line
-        line = get_next_line(fd);
-        printf("[%s]", line);
-        free(line); // Libérer la mémoire allouée par get_next_line
-        close(fd);
-
-        return (0);
-}*/
+// 	// Ouvrir le fichier en lecture
+// 	fd = open("mutiple.txt", O_RDONLY);
+// 	if (fd == -1)
+// 	{
+// 		perror("Error opening file");
+// 		return (1);
+// 	}
+// 	line = get_next_line(fd);
+// 	printf("%s", line);
+// 	free(line);
+// 	close(fd);
+// 	printf("%d\n", fd);
+// 	line = get_next_line(10);
+// 	printf("oui = |%s|", line);
+// 	fd = open("mutiple.txt", O_RDONLY);
+// 	line = get_next_line(fd);
+// 	printf("%s", line);
+// 	free(line);
+// 	line = get_next_line(fd);
+// 	printf("[%s]\n", line);
+// 	free(line);
+// 	line = get_next_line(10);
+// 	printf("[%s]\n", line);
+// 	free(line);
+// 	close(fd);
+// 	fd = open("read_error.txt", O_RDONLY);
+// 	while ((line = get_next_line(fd)) != NULL)
+// 	{
+// 		printf("%s", line);
+// 		free(line);
+// 	}
+// 	return (0);
+// }
